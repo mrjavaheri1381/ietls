@@ -34,8 +34,8 @@ payload = {
     "timesOfDay": ["MORNING", "AFTERNOON"],
     "fromTestStartDateLocal": "2025-11-01",
     "toTestStartDateLocal": "2025-11-30",
-    "countryCode": "ARM",
-    "city": "Yerevan",
+    "countryCode": "IRN",
+    "city": "Tehran",
     "testDeliveryFormats": ["CD"],
     "testCategories": ["IELTS"],
     "testModules": ["ACADEMIC"]
@@ -70,15 +70,17 @@ while True:
             message = "📢 IELTS test sessions found!\n\n"
             for item in items:
                 loc = item['testLocation']['name']
+                if('IRSAFAM' in loc):
+                    continue
                 date = item['testStartLocalDatetime'][:10]
                 message += f"🏫 {loc} — 📅 {date}\n"
-
-            send_telegram_message(message,CHAT_ID2)
-            send_telegram_message(message,CHAT_ID1)
+            if(message!="📢 IELTS test sessions found!\n\n"):
+                send_telegram_message(message,CHAT_ID2)
+                send_telegram_message(message,CHAT_ID1)
         else:
             print("❌ No sessions found this time.")
 
     except Exception as e:
         print("⚠️ Error checking IELTS sessions:", e)
 
-    time.sleep(60)
+    time.sleep(30)
