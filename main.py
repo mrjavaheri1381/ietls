@@ -58,25 +58,27 @@ def send_telegram_message(text, CHAT_ID):
             print("⚠️ Error sending message:", e)
             time.sleep(1)  # صبر قبل از تلاش دوباره
 
+# === حلقه اصلی (هر ۳۰ ثانیه) ===
+print("🚀 IELTS session monitor started... (every 30s)")
+while True:
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=15)
+        data = response.json()
+        items = data.get('items', [])
 
+        if items:
+            message = "📢 IELTS test sessions found!\n\n"
+            for item in items:
+                loc = item['testLocation']['name']
+                date = item['testStartLocalDatetime'][:10]
+                message += f"🏫 {loc} — 📅 {date}\n"
 
-try:
-    response = requests.post(url, headers=headers, json=payload, timeout=15)
-    data = response.json()
-    items = data.get('items', [])
+            send_telegram_message(message,CHAT_ID2)
+            send_telegram_message(message,CHAT_ID1)
+        else:
+            print("❌ No sessions found this time.")
 
-    if items:
-        message = "📢 IELTS test sessions found!\n\n"
-        for item in items:
-            loc = item['testLocation']['name']
-            date = item['testStartLocalDatetime'][:10]
-            message += f"🏫 {loc} — 📅 {date}\n"
+    except Exception as e:
+        print("⚠️ Error checking IELTS sessions:", e)
 
-        send_telegram_message(message,CHAT_ID2)
-        send_telegram_message(message,CHAT_ID1)
-    else:
-        print("❌ No sessions found this time.")
-
-except Exception as e:
-    print("⚠️ Error checking IELTS sessions:", e)
-
+    time.sleep(60)
